@@ -44,6 +44,19 @@
     </form>
 </div>
     <script>
+        $(document).ready(async function() {
+            console.log("document ready");
+            let state = $("#state").val();
+            let url = `https://cst336.herokuapp.com/projects/api/state_abbrAPI.php`;
+            let response = await fetch(url);
+            let data = await response.json();
+            $("#state").html("<option>Select one</option>");
+            console.log(data);
+            for (let i = 0; i < data.length; i++) {
+                $("#state").append(`<option value='${data[i].usps}'>${data[i].state}</option>`);
+}
+        });//document ready
+
         var usernameAvailable = false;
         //Displaying City from API after typing a zip Code
         $("#zip").on("change", async function() {
@@ -52,10 +65,15 @@
             let url = `https://cst336.herokuapp.com/projects/api/cityInfoAPI.php?zip=${zipCode}`;
             let response = await fetch(url);
             let data = await response.json();
-            console.log(data);
+            console.log(data.city);
+            if (typeof data.city == "undefined"){
+                $("#city").html("Zip code not found");
+                $("#city").css("color", "red");
+            } else {
             $("#city").html(data.city);
+            $("#city").css("color", "black");
             $("#latitude").html(data.latitude);
-            $("#longitude").html(data.longitude);
+            $("#longitude").html(data.longitude);}
         }); //zip
 
         $("#state").on("change", async function() {
@@ -109,7 +127,7 @@
             };
 
             if($("#password").val() != $("#passwordAgain").val()){
-                $("#passwordAgainError").html("Password mismatch!");
+                $("#passwordAgainError").html("Password mismatch! Please retype.");
                 $("#passwordAgainError").css("color", "red");
                 isValid= false;
             };
